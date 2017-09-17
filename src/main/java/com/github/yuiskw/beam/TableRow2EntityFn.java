@@ -62,42 +62,51 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
   public Value convertToDatastoreValue(Object value) {
     Value v = null;
     if (value instanceof java.lang.Boolean) {
-      v = Value.newBuilder().setBooleanValue(((Boolean) value).booleanValue()).build();
+      v = Value.newBuilder().setBooleanValue(((Boolean) value).booleanValue())
+          .setExcludeFromIndexes(true).build();
     }
     // INTEGER
     else if (value instanceof java.lang.Integer) {
-      v = Value.newBuilder().setIntegerValue(((Integer) value).intValue()).build();
+      v = Value.newBuilder().setIntegerValue(((Integer) value).intValue())
+          .setExcludeFromIndexes(true).build();
     }
     else if (value instanceof String && parseInteger((String) value) != null) {
       Integer integer = parseInteger((String) value);
-      v = Value.newBuilder().setIntegerValue(integer.intValue()).build();
+      v = Value.newBuilder().setIntegerValue(integer.intValue())
+          .setExcludeFromIndexes(true).build();
     }
     // LONG
     else if (value instanceof java.lang.Long) {
-      v = Value.newBuilder().setIntegerValue((int) ((Long) value).longValue()).build();
+      v = Value.newBuilder().setIntegerValue((int) ((Long) value).longValue())
+          .setExcludeFromIndexes(true).build();
     }
     // DOUBLE
     else if (value instanceof java.lang.Double) {
-      v = Value.newBuilder().setDoubleValue(((Double) value).doubleValue()).build();
+      v = Value.newBuilder().setDoubleValue(((Double) value).doubleValue())
+          .setExcludeFromIndexes(true).build();
     }
     // TIMESTAMP
     else if (value instanceof org.joda.time.LocalDateTime) {
       Timestamp timestamp = toTimestamp(((LocalDateTime) value).toLocalDate().toDate());
-      v = Value.newBuilder().setTimestampValue(timestamp).build();
+      v = Value.newBuilder().setTimestampValue(timestamp)
+          .setExcludeFromIndexes(true).build();
     }
     else if (value instanceof String && parseTimestamp((String) value) != null) {
       Date date = parseTimestamp((String) value);
       Timestamp timestamp = toTimestamp(date);
-      v = Value.newBuilder().setTimestampValue(timestamp).build();
+      v = Value.newBuilder().setTimestampValue(timestamp)
+          .setExcludeFromIndexes(true).build();
     }
     // DATE
     else if (value instanceof org.joda.time.LocalDate) {
       Timestamp timestamp = toTimestamp(((LocalDate) value).toDate());
-      v = Value.newBuilder().setTimestampValue(timestamp).build();
+      v = Value.newBuilder().setTimestampValue(timestamp)
+          .setExcludeFromIndexes(true).build();
     } else if (value instanceof String && parseDate((String) value) != null) {
       Date date = parseDate((String) value);
       Timestamp timestamp = toTimestamp(date);
-      v = Value.newBuilder().setTimestampValue(timestamp).build();
+      v = Value.newBuilder().setTimestampValue(timestamp)
+          .setExcludeFromIndexes(true).build();
     }
     // TIME
     // NOTE: Datastore doesn't have any data type to time.
@@ -108,7 +117,8 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
     }
     // STRING
     else if (value instanceof String) {
-      v = Value.newBuilder().setStringValue((String) value).build();
+      v = Value.newBuilder().setStringValue((String) value)
+          .setExcludeFromIndexes(true).build();
     }
     // RECORD
     else if (value instanceof List) {

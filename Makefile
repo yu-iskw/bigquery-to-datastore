@@ -1,9 +1,9 @@
 .PHONY: test checkstyle clean
 
-all: checkstyle test compile
+all: checkstyle test package
 
-compile:
-	  mvn clean compile
+package:
+	  mvn clean package
 
 test:
 	  mvn test

@@ -2,6 +2,9 @@
 
 This allows us to export a BigQuery table to a Google Datastore kind using Apache Beam on top of Google Dataflow.
 
+You don't have to have duplicated rows whose key values are same.
+Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
+
 ![Data Pipeline](./docs/flow.png)
 
 ## Requirements
