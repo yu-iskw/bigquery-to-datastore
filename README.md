@@ -2,6 +2,8 @@
 
 This allows us to export a BigQuery table to a Google Datastore kind using Apache Beam on top of Google Dataflow.
 
+![Data Pipeline](./docs/flow.png)
+
 ## Requirements
 
 - Maven
