@@ -48,6 +48,27 @@ This allows us to export a BigQuery table to a Google Datastore kind using Apach
   --gcpTempLocation=gs://test_yu/test-log/
 ```
 
+Or, the below command allows us to run this package with a JAR file.
+
+```
+# compile
+mvn clean package
+
+# Run bigquery-to-datastore via the compiled JAR file
+java -cp /path/to/bigquery-to-datastore-bundled-{version}.jar \
+  com.github.yuiskw.beam.BigQuery2Datastore \
+  --project=sage-shard-740 \
+  --runner=DataflowRunner \
+  --inputBigQueryDataset=test_dataset \
+  --inputBigQueryTable=test_table \
+  --outputDatastoreNamespace=test_namespace \
+  --outputDatastoreKind=TestKind \
+  --parentPaths=Parent1:p1,Parent2:p2 \
+  --keyColumn=id \
+  --tempLocation=gs://test_bucket/test-log/ \
+  --gcpTempLocation=gs://test_bucket/test-log/
+```
+
 ### Type conversions between BigQuery and Google Datastore
 
 The below table describes the type conversions between BigQuery and Google Datastore.
