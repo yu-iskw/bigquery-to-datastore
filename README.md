@@ -34,6 +34,8 @@ Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
 - `--parentPaths`: Output Google Datastore parent path(s)
   - e.g. `Parent1:p1,Parent2:p2` ==> `KEY('Parent1', 'p1', 'Parent2', 'p2')`
 - `--numWorkers`: The number of workers when you run it on top of Google Dataflow.
+- `--workerMachineType`: Google Dataflow worker instance type
+  - e.g. `n1-standard-1`, `n1-standard-4`
 
 #### Example to run on Google Dataflow
 
