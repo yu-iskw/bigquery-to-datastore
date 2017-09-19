@@ -91,3 +91,7 @@ Since Datastore unfortunately doesn't have any data type for time, `bigquery-to-
 | TIME  | **ignored: Google Datastore doesn't have time type.**  |
 | RECORD  | array  |
 | STRUCT  | `Entity`  |
+
+## License
+
+Copyright (c) 2017 Yu Ishikawa.
