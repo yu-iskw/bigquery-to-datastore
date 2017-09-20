@@ -92,6 +92,12 @@ Since Datastore unfortunately doesn't have any data type for time, `bigquery-to-
 | RECORD  | array  |
 | STRUCT  | `Entity`  |
 
+## Note
+
+As you probably know, Google Datastore doesn't have any feature much like `UPDATE` of MySQL.
+Since `DatastoreIO.Write` upsert given input entities, it will just overwrite an entity whether or not it already exists.
+If we would like to insert multiple data separately, we have to combine them on bigquery beforehand.
+
 ## License
 
 Copyright (c) 2017 Yu Ishikawa.
