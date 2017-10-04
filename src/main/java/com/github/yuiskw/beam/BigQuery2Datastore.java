@@ -97,8 +97,14 @@ public class BigQuery2Datastore {
     if (parentPaths != null) {
       // TODO validation
       for (String path : parentPaths.split(",")) {
-        String[] elements = path.split(":");
-        pathMap.put(elements[0], elements[1]);
+        // trim
+        String trimmed = path.replaceAll("(^\\s+|\\s+$)", "");
+
+        // split with ":" and trim each element
+        String[] elements = trimmed.split(":");
+        String k = elements[0].replaceAll("(^\\s+|\\s+$)", "");
+        String v = elements[1].replaceAll("(^\\s+|\\s+$)", "");
+        pathMap.put(k, v);
       }
     }
     return pathMap;
