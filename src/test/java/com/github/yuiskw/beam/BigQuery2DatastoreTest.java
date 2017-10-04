@@ -111,4 +111,14 @@ public class BigQuery2DatastoreTest {
     assertEquals("p1", parents.get("Parent1"));
     assertEquals("p2", parents.get("Parent2"));
   }
+
+  @Test
+  public void testParseParentPathsWithSpaces() {
+    String parentPaths = " Parent1:  p1,  Parent2 : p2 ";
+    LinkedHashMap<String, String> parents =
+        BigQuery2Datastore.parseParentPaths(parentPaths);
+    assertEquals(2, parents.size());
+    assertEquals("p1", parents.get("Parent1"));
+    assertEquals("p2", parents.get("Parent2"));
+  }
 }
