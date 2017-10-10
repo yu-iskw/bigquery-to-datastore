@@ -1,0 +1,14 @@
+language: java
+sudo: false # faster builds
+
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk7
+  - openjdk8
+
+script:
+  - "mvn test"
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
