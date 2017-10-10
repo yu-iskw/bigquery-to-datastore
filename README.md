@@ -1,5 +1,8 @@
 # `bigquery-to-datastore`
 
+[![Build Status](https://travis-ci.org/yu-iskw/bigquery-to-datastore.svg?branch=master)](https://travis-ci.org/yu-iskw/bigquery-to-datastore)
+[![codecov](https://codecov.io/gh/yu-iskw/bigquery-to-datastore/branch/master/graph/badge.svg)](https://codecov.io/gh/yu-iskw/bigquery-to-datastore)
+
 This allows us to export a BigQuery table to a Google Datastore kind using Apache Beam on top of Google Dataflow.
 
 You don't have to have duplicated rows whose key values are same.
