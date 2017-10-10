@@ -1,3 +1,7 @@
+#
+# Copyright (c) 2017 Yu Ishikawa.
+#
+
 .PHONY: test checkstyle clean
 
 all: checkstyle test package
