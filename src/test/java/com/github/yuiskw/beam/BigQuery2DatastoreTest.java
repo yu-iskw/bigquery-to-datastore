@@ -1,3 +1,6 @@
+/**
+ * Copyright (c) 2017 Yu Ishikawa.
+ */
 package com.github.yuiskw.beam;
 
 import java.util.LinkedHashMap;

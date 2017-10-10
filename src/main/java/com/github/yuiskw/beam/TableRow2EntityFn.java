@@ -1,5 +1,7 @@
+/**
+ * Copyright (c) 2017 Yu Ishikawa.
+ */
 package com.github.yuiskw.beam;
-
 
 import java.text.DateFormat;
 import java.text.ParseException;
