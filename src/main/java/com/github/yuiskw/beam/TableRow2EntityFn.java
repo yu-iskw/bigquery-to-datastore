@@ -16,12 +16,20 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 
+/**
+ * This class is an Apache Beam function to convert TableRow to Entity.
+ */
 public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
 
+  /** Google Cloud Platform project ID */
   private String projectId;
+  /** Google Datastore name space */
   private String namespace;
+  /** Google Datastore parent paths */
   private LinkedHashMap<String, String> parents;
+  /** Google Datastore kind name */
   private String kind;
+  /** BigQuery column for Google Datastore key */
   private String keyColumn;
 
   public TableRow2EntityFn(
@@ -49,6 +57,9 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
     return timestamp;
   }
 
+  /**
+   * Convert TableRow to Entity
+   */
   @ProcessElement
   public void processElement(ProcessContext c) {
     try {
@@ -61,8 +72,16 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
     }
   }
 
+  /**
+   * Convert an object to Datastore value
+   */
   public Value convertToDatastoreValue(Object value) {
     Value v = null;
+
+    if (value == null) {
+      return v;
+    }
+
     if (value instanceof java.lang.Boolean) {
       v = Value.newBuilder().setBooleanValue(((Boolean) value).booleanValue())
           .setExcludeFromIndexes(true).build();
@@ -140,13 +159,22 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       Map<String, Object> struct = (Map<String, Object>) value;
       for (String subKey : struct.keySet()) {
         Value subV = convertToDatastoreValue(struct.get(subKey));
-        subEntityBuilder.putProperties(subKey, subV);
+        if (subV != null) {
+          subEntityBuilder.putProperties(subKey, subV);
+        }
       }
       v = Value.newBuilder().setEntityValue(subEntityBuilder.build()).build();
     }
     return v;
   }
 
+  /**
+   * Convert TableRow to Entity
+   *
+   * @param row TableRow of bigquery
+   * @return converted Entity
+   * @throws ParseException
+   */
   public Entity convertTableRowToEntity(TableRow row) throws ParseException {
     String keyName = row.get(keyColumn).toString();
     Key key = getKey(keyName);
@@ -196,6 +224,12 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
     return keyBuilder.build();
   }
 
+  /**
+   * Parse integer value
+   *
+   * @param value String
+   * @return parsed integer of null if given value is not integer
+   */
   public static Integer parseInteger(String value) {
     Integer integer = null;
     try {

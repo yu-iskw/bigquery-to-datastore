@@ -41,6 +41,7 @@ public class BigQuery2DatastoreTest {
    SELECT
      "uuid1" AS uuid,
      False AS bool_value,
+     null AS nullable_value,
      1 AS int_value,
      1.23 AS float_value,
      "hoge" AS string_value,
@@ -58,7 +59,8 @@ public class BigQuery2DatastoreTest {
    UNION ALL
    SELECT
      "uuid2" AS uuid,
-     False AS bool_value,
+     True AS bool_value,
+     321 AS nullable_value,
      1 AS int_value,
      1.23 AS float_value,
      "hoge" AS string_value,
@@ -66,8 +68,8 @@ public class BigQuery2DatastoreTest {
      CURRENT_TIME() AS time_value,
      CURRENT_TIMESTAMP() AS timestamp_value,
      [1, 2] AS int_array_value,
-     [1.23, 2.34, 3.45] AS float_array_value,
-     ["hoge", "fuga", "hoge2", "fuga2"] AS string_array_value,
+     [1.23, 2.34, 3.45, 4.56] AS float_array_value,
+     ["hoge", "fuga"] AS string_array_value,
      STRUCT(
      1 AS int_value,
      1.23 AS float_value,
@@ -94,9 +96,9 @@ public class BigQuery2DatastoreTest {
     String[] args = {
         "--project=test-project-id",
         "--inputBigQueryDataset=test_yu",
-        "--inputBigQueryTable=test_table",
+        "--inputBigQueryTable=table_table",
         "--outputDatastoreNamespace=test_double",
-        "--outputDatastoreKind=TestKind",
+        "--outputDatastoreKind=TestKind2",
         "--parentPaths=Parent1:p1,Parent2:p2",
         "--keyColumn=uuid",
         "--tempLocation=gs://test_yu/test-log/",
