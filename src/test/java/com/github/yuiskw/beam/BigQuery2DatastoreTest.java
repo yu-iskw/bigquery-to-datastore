@@ -4,6 +4,7 @@
 package com.github.yuiskw.beam;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -24,7 +25,8 @@ public class BigQuery2DatastoreTest {
         "--inputBigQueryTable=test_table",
         "--outputDatastoreNamespace=test_namespace",
         "--outputDatastoreKind=TestKind",
-        "--keyColumn=key_column"
+        "--keyColumn=key_column",
+        "--indexedColumns=col1,col2,col3"
     };
     BigQuery2Datastore.Optoins options = BigQuery2Datastore.getOptions(args);
     assertEquals("test-project-id", options.getProject());
@@ -33,6 +35,7 @@ public class BigQuery2DatastoreTest {
     assertEquals("test_namespace", options.getOutputDatastoreNamespace());
     assertEquals("TestKind", options.getOutputDatastoreKind());
     assertEquals("key_column", options.getKeyColumn());
+    assertEquals("col1,col2,col3", options.getIndexedColumns());
   }
 
   /**
@@ -125,5 +128,14 @@ public class BigQuery2DatastoreTest {
     assertEquals(2, parents.size());
     assertEquals("p1", parents.get("Parent1"));
     assertEquals("p2", parents.get("Parent2"));
+  }
+
+  @Test
+  public void testParseIndexedColumns() {
+    String indexedColumns = " col1, col2 , col3  ";
+    List<String> columns = BigQuery2Datastore.parseIndexedColumns(indexedColumns);
+    assertEquals("col1", columns.get(0));
+    assertEquals("col2", columns.get(1));
+    assertEquals("col3", columns.get(2));
   }
 }
