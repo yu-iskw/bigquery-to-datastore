@@ -36,6 +36,8 @@ Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
   - e.g. `DataflowRunner`
 - `--parentPaths`: Output Google Datastore parent path(s)
   - e.g. `Parent1:p1,Parent2:p2` ==> `KEY('Parent1', 'p1', 'Parent2', 'p2')`
+- `--indexedColumns`: Indexed columns on Google Datastore.
+  - e.g. `col1,col2,col3` ==> `col1`, `col2` and `col2` are indexed on Google Datastore.
 - `--numWorkers`: The number of workers when you run it on top of Google Dataflow.
 - `--workerMachineType`: Google Dataflow worker instance type
   - e.g. `n1-standard-1`, `n1-standard-4`
@@ -43,29 +45,13 @@ Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
 #### Example to run on Google Dataflow
 
 ```
-./bigquery-to-datastore.sh \
-  --project=${GCP_PROJECT_ID} \
-  --runner=DataflowRunner \
-  --inputBigQueryDataset=test_dataset \
-  --inputBigQueryTable=test_table \
-  --outputDatastoreNamespace=test_namespace \
-  --outputDatastoreKind=TestKind \
-  --parentPaths=Parent1:p1,Parent2:p2 \
-  --keyColumn=uuid \
-  --tempLocation=gs://test_yu/test-log/ \
-  --gcpTempLocation=gs://test_yu/test-log/
-```
-
-Or, the below command allows us to run this package with a JAR file.
-
-```
 # compile
 mvn clean package
 
 # Run bigquery-to-datastore via the compiled JAR file
-java -cp /path/to/bigquery-to-datastore-bundled-{version}.jar \
+java -cp $(pwd)/target/bigquery-to-datastore-bundled-0.3.jar \
   com.github.yuiskw.beam.BigQuery2Datastore \
-  --project=sage-shard-740 \
+  --project=your-gcp-project \
   --runner=DataflowRunner \
   --inputBigQueryDataset=test_dataset \
   --inputBigQueryTable=test_table \
@@ -73,6 +59,7 @@ java -cp /path/to/bigquery-to-datastore-bundled-{version}.jar \
   --outputDatastoreKind=TestKind \
   --parentPaths=Parent1:p1,Parent2:p2 \
   --keyColumn=id \
+  --indexedColumns=col1,col2,col3 \
   --tempLocation=gs://test_bucket/test-log/ \
   --gcpTempLocation=gs://test_bucket/test-log/
 ```

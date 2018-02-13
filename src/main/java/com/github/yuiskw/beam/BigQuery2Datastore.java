@@ -3,9 +3,12 @@
  */
 package com.github.yuiskw.beam;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.google.api.services.bigquery.model.TableReference;
+import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
 import org.apache.beam.sdk.io.gcp.datastore.DatastoreIO;
@@ -14,7 +17,6 @@ import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.options.Validation;
 import org.apache.beam.sdk.transforms.ParDo;
-import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions;
 
 /**
  * This class is used for a Dataflow job which write parsed Laplace logs to BigQuery.
@@ -51,6 +53,10 @@ public class BigQuery2Datastore {
     @Description("Datastore parent path(s) (format: 'Parent1:p1,Parent2:p2')")
     String getParentPaths();
     void setparentPaths(String parentPaths);
+
+    @Description("Indexed columns (format: 'column1,column2,column3')")
+    String getIndexedColumns();
+    void setIndexedColumns(String indexedColumns);
   }
 
   public static void main(String[] args) {
@@ -63,6 +69,7 @@ public class BigQuery2Datastore {
     String kind = options.getOutputDatastoreKind();
     String keyColumn = options.getKeyColumn();
     LinkedHashMap<String, String> parents = parseParentPaths(options.getParentPaths());
+    List<String> indexedColumns = parseIndexedColumns(options.getIndexedColumns());
 
     // Input
     TableReference tableRef = new TableReference().setDatasetId(datasetId).setTableId(tableId);
@@ -72,10 +79,12 @@ public class BigQuery2Datastore {
     DatastoreV1.Write writer = DatastoreIO.v1().write().withProjectId(projectId);
 
     // Build and run pipeline
+    TableRow2EntityFn fn =
+        new TableRow2EntityFn(projectId, namespace, parents, kind, keyColumn, indexedColumns);
     Pipeline pipeline = Pipeline.create(options);
     pipeline
         .apply(reader)
-        .apply(ParDo.of(new TableRow2EntityFn(projectId, namespace, parents, kind, keyColumn)))
+        .apply(ParDo.of(fn))
         .apply(writer);
     pipeline.run();
   }
@@ -111,5 +120,23 @@ public class BigQuery2Datastore {
       }
     }
     return pathMap;
+  }
+
+  /**
+   * Get indexed column names
+   *
+   * @param indexedColumns a string separated by "," (i.e. "column1,column2,column3").
+   * @return array of indexed column name.
+   */
+  public static List<String> parseIndexedColumns(String indexedColumns) {
+    ArrayList<String> columns = new ArrayList<String>();
+    if (indexedColumns != null) {
+      for (String path : indexedColumns.split(",")) {
+        // trim
+        String column = path.replaceAll("(^\\s+|\\s+$)", "");
+        columns.add(column);
+      }
+    }
+    return columns;
   }
 }

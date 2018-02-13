@@ -4,14 +4,14 @@
 package com.github.yuiskw.beam;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
 import com.google.api.services.bigquery.model.TableRow;
 import com.google.datastore.v1.Entity;
 import com.google.datastore.v1.Key;
+import com.google.datastore.v1.Value;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
@@ -21,10 +21,10 @@ public class TableRow2EntityFnTest {
   private String namespace = "test_double";
   private String kind = "TestKind";
   private String keyColumn = "uuid";
+  private List<String> indexedColumns = Arrays.asList("user_id", "name");
 
   private TableRow getTestTableRow() {
     TableRow row = new TableRow();
-    String hoge = "abc";
     String timestamp = Instant.now().toString();
     Instant.parse(timestamp);
     row.set("uuid", "")
@@ -32,7 +32,6 @@ public class TableRow2EntityFnTest {
         .set("long_value", 1L)
         .set("name", "abc")
         .set("bool_value", true)
-        .set("z", hoge)
         .set("float_value", 1.23)
         .set("date", new Date())
         .set("datetime", new DateTime(new Date()))
@@ -46,12 +45,19 @@ public class TableRow2EntityFnTest {
     TableRow row = getTestTableRow();
 
     try {
-      TableRow2EntityFn fn = new TableRow2EntityFn(projectId, namespace, null, kind, keyColumn);
+      TableRow2EntityFn fn =new TableRow2EntityFn(
+          projectId, namespace, null, kind, keyColumn, indexedColumns);
       Entity entity = fn.convertTableRowToEntity(row);
       Key key = entity.getKey();
       assertEquals(key.getPartitionId().getProjectId(), projectId);
       assertEquals(key.getPartitionId().getNamespaceId(), namespace);
       assertEquals(key.getPath(0).getKind(), kind);
+
+      Map<String, Value> properties = entity.getPropertiesMap();
+      assertFalse(properties.get("user_id").getExcludeFromIndexes());
+      assertTrue(properties.get("long_value").getExcludeFromIndexes());
+      assertFalse(properties.get("name").getExcludeFromIndexes());
+      assertTrue(properties.get("bool_value").getExcludeFromIndexes());
     } catch (ParseException e) {
       e.printStackTrace();
     }
@@ -64,7 +70,8 @@ public class TableRow2EntityFnTest {
     try {
       LinkedHashMap<String, String> parents =
           BigQuery2Datastore.parseParentPaths("Parent1:p1,Parent2:p2");
-      TableRow2EntityFn fn = new TableRow2EntityFn(projectId, namespace, parents, kind, keyColumn);
+      TableRow2EntityFn fn =
+          new TableRow2EntityFn(projectId, namespace, parents, kind, keyColumn, indexedColumns);
       Entity entity = fn.convertTableRowToEntity(row);
       Key key = entity.getKey();
       assertEquals(key.getPartitionId().getProjectId(), projectId);
@@ -72,6 +79,12 @@ public class TableRow2EntityFnTest {
       assertEquals(key.getPath(0).getKind(), "Parent1");
       assertEquals(key.getPath(1).getKind(), "Parent2");
       assertEquals(key.getPath(2).getKind(), kind);
+
+      Map<String, Value> properties = entity.getPropertiesMap();
+      assertFalse(properties.get("user_id").getExcludeFromIndexes());
+      assertTrue(properties.get("long_value").getExcludeFromIndexes());
+      assertFalse(properties.get("name").getExcludeFromIndexes());
+      assertTrue(properties.get("bool_value").getExcludeFromIndexes());
     } catch (ParseException e) {
       e.printStackTrace();
     }
@@ -101,5 +114,15 @@ public class TableRow2EntityFnTest {
     assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16T04:14:37.844024"));
     assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37"));
     assertNull(TableRow2EntityFn.parseTimestamp("hoge"));
+  }
+
+  @Test
+  public void testIsExlucedFromIndex() {
+    List<String> indexedColumns = Arrays.asList("col1", "col3");
+    assertFalse(TableRow2EntityFn.isExcludedFromIndex("col1", indexedColumns));
+    assertTrue(TableRow2EntityFn.isExcludedFromIndex("col2", indexedColumns));
+    assertFalse(TableRow2EntityFn.isExcludedFromIndex("col3", indexedColumns));
+
+    assertTrue(TableRow2EntityFn.isExcludedFromIndex(null, indexedColumns));
   }
 }
