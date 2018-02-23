@@ -16,21 +16,9 @@ Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
 - Java 1.7+
 - Google Cloud Platform account
 
-## How to install with homebrew
-You can install it with homebrew from [yu-iskw/homebrew-bigquery-to-datastore](https://github.com/yu-iskw/homebrew-bigquery-to-datastore).
-```
-# install
-brew install yu-iskw/bigquery-to-datastore/bigquery-to-datastore
+## Usage
 
-# show help
-bigquery-to-datastore --help
-```
-
-## How to build and use
-
-### Command line options
-
-#### Required arguments
+### Required arguments
 - `--project`: Google Cloud Project
 - `--inputBigQueryDataset`: Input BigQuery dataset ID
 - `--inputBigQueryTable`: Input BigQuery table ID
@@ -40,7 +28,7 @@ bigquery-to-datastore --help
 - `--tempLocation`: The Cloud Storage path to use for temporary files. Must be a valid Cloud Storage URL, beginning with `gs://`.
 - `--gcpTempLocation`: A GCS path for storing temporary files in GCP.
 
-#### Optional arguments
+### Optional arguments
 - `--runner`: Apache Beam runner.
   - When you don't set this option, it will run on your local machine, not Google Dataflow.
   - e.g. `DataflowRunner`
@@ -52,8 +40,7 @@ bigquery-to-datastore --help
 - `--workerMachineType`: Google Dataflow worker instance type
   - e.g. `n1-standard-1`, `n1-standard-4`
 
-#### Example to run on Google Dataflow
-
+### Example to run on Google Dataflow
 ```
 # compile
 mvn clean package
@@ -74,8 +61,39 @@ java -cp $(pwd)/target/bigquery-to-datastore-bundled-0.3.jar \
   --gcpTempLocation=gs://test_bucket/test-log/
 ```
 
-### Type conversions between BigQuery and Google Datastore
+## How to run
 
+### How to build and run it with java
+```
+# compile
+mvn clean package
+# or
+make package
+
+# run
+java -cp $(pwd)/target/bigquery-to-datastore-bundled-0.3.jar --help
+# or
+./bin/bigquery-to-datastore --help
+```
+
+### How to run it on docker
+We also offers docker images for this project in [yuiskw/bigquery\-to\-datastore \- Docker Hub](https://hub.docker.com/r/yuiskw/bigquery-to-datastore/).
+We have several docker images based on Apache Beam versions.
+```
+docker run yuiskw/bigquery-to-datastore:latest --help
+```
+
+### How to install it with homebrew
+You can install it with homebrew from [yu-iskw/homebrew-bigquery-to-datastore](https://github.com/yu-iskw/homebrew-bigquery-to-datastore).
+```
+# install
+brew install yu-iskw/bigquery-to-datastore/bigquery-to-datastore
+
+# show help
+bigquery-to-datastore --help
+```
+
+### Type conversions between BigQuery and Google Datastore
 The below table describes the type conversions between BigQuery and Google Datastore.
 Since Datastore unfortunately doesn't have any data type for time, `bigquery-to-datastore` ignore BigQuery columns whose data type are `TIME`.
 
@@ -93,11 +111,9 @@ Since Datastore unfortunately doesn't have any data type for time, `bigquery-to-
 | STRUCT  | `Entity`  |
 
 ## Note
-
 As you probably know, Google Datastore doesn't have any feature much like `UPDATE` of MySQL.
 Since `DatastoreIO.Write` upsert given input entities, it will just overwrite an entity whether or not it already exists.
 If we would like to insert multiple data separately, we have to combine them on bigquery beforehand.
 
 ## License
-
 Copyright (c) 2017 Yu Ishikawa.
