@@ -26,11 +26,11 @@ brew install yu-iskw/bigquery-to-datastore/bigquery-to-datastore
 bigquery-to-datastore --help
 ```
 
-## How to Use
+## How to build and use
 
-### Command Line Options
+### Command line options
 
-#### Required Options
+#### Required arguments
 - `--project`: Google Cloud Project
 - `--inputBigQueryDataset`: Input BigQuery dataset ID
 - `--inputBigQueryTable`: Input BigQuery table ID
@@ -40,7 +40,7 @@ bigquery-to-datastore --help
 - `--tempLocation`: The Cloud Storage path to use for temporary files. Must be a valid Cloud Storage URL, beginning with `gs://`.
 - `--gcpTempLocation`: A GCS path for storing temporary files in GCP.
 
-#### Optional Options
+#### Optional arguments
 - `--runner`: Apache Beam runner.
   - When you don't set this option, it will run on your local machine, not Google Dataflow.
   - e.g. `DataflowRunner`
