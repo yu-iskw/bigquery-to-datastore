@@ -1,0 +1,15 @@
+#!/bin/bash -e
+#
+# Copyright (c) 2017 Yu Ishikawa.
+#
+PROJECT_DIR=$(dirname $(dirname $(readlink -f $0)))
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
+  ARGS="--help=Options"
+else
+  ARGS=$@
+fi
+
+java -cp ${PROJECT_DIR}/target/bigquery-to-datastore-bundled-*.jar \
+  com.github.yuiskw.beam.BigQuery2Datastore \
+  $ARGS
