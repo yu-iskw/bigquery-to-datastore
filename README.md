@@ -16,6 +16,16 @@ Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
 - Java 1.7+
 - Google Cloud Platform account
 
+## How to install with homebrew
+You can install it with homebrew from [yu-iskw/homebrew-bigquery-to-datastore](https://github.com/yu-iskw/homebrew-bigquery-to-datastore).
+```
+# install
+brew install yu-iskw/bigquery-to-datastore/bigquery-to-datastore
+
+# show help
+bigquery-to-datastore --help
+```
+
 ## How to Use
 
 ### Command Line Options
