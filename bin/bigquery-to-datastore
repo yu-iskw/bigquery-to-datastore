@@ -4,7 +4,7 @@
 #
 PROJECT_DIR=$(dirname $(dirname $(readlink -f $0)))
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
+if [ $# == 0 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
   ARGS="--help=Options"
 else
   ARGS=$@
