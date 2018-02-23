@@ -28,7 +28,7 @@ public class BigQuery2DatastoreTest {
         "--keyColumn=key_column",
         "--indexedColumns=col1,col2,col3"
     };
-    BigQuery2Datastore.Optoins options = BigQuery2Datastore.getOptions(args);
+    BigQuery2Datastore.Options options = BigQuery2Datastore.getOptions(args);
     assertEquals("test-project-id", options.getProject());
     assertEquals("test_dataset", options.getInputBigQueryDataset());
     assertEquals("test_table", options.getInputBigQueryTable());

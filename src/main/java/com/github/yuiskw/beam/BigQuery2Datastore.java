@@ -24,7 +24,7 @@ import org.apache.beam.sdk.transforms.ParDo;
 public class BigQuery2Datastore {
 
   /** command line options interface */
-  public interface Optoins extends DataflowPipelineOptions {
+  public interface Options extends DataflowPipelineOptions {
     @Description("Input BigQuery dataset name")
     @Validation.Required
     String getInputBigQueryDataset();
@@ -60,7 +60,7 @@ public class BigQuery2Datastore {
   }
 
   public static void main(String[] args) {
-    Optoins options = getOptions(args);
+    Options options = getOptions(args);
 
     String projectId = options.getProject();
     String datasetId = options.getInputBigQueryDataset();
@@ -92,10 +92,11 @@ public class BigQuery2Datastore {
   /**
    * Get command line options
    */
-  public static Optoins getOptions(String[] args) {
-    Optoins options = PipelineOptionsFactory.fromArgs(args)
+  public static Options getOptions(String[] args) {
+    PipelineOptionsFactory.register(Options.class);
+    Options options = PipelineOptionsFactory.fromArgs(args)
         .withValidation()
-        .as(Optoins.class);
+        .as(Options.class);
     return options;
   }
 

@@ -22,7 +22,7 @@
 
   <groupId>com.github.yuiskw</groupId>
   <artifactId>bigquery-to-datastore</artifactId>
-  <version>0.3</version>
+  <version>0.4</version>
 
   <packaging>jar</packaging>
 
