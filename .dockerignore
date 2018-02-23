@@ -1,0 +1,6 @@
+*.swp
+.travis.yml
+Dockerfile
+README.md
+bigquery-to-datastore.iml
+docs/
