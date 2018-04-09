@@ -6,6 +6,10 @@ package com.github.yuiskw.beam;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.*;
 
 import com.google.api.services.bigquery.model.TableRow;
@@ -257,9 +261,11 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
   public static Date parseDate(String value) {
     Date date = null;
     try {
-      DateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd");
-      date = sourceFormat.parse(value);
-    } catch (ParseException e) {
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
+          .withResolverStyle(ResolverStyle.SMART);
+      java.time.LocalDate localDate = java.time.LocalDate.parse(value, formatter);
+      date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    } catch (DateTimeParseException e) {
       // Do nothing.
       ;
     }

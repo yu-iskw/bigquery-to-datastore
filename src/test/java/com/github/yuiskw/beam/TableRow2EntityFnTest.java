@@ -94,6 +94,8 @@ public class TableRow2EntityFnTest {
   public void testIsDate() {
     assertNotNull(TableRow2EntityFn.parseDate("2017-01-01"));
     assertNotNull(TableRow2EntityFn.parseDate("2017-1-1"));
+    assertNotNull(TableRow2EntityFn.parseDate("2017-01-1"));
+    assertNotNull(TableRow2EntityFn.parseDate("2017-1-01"));
     assertNull(TableRow2EntityFn.parseDate("hoge"));
   }
 
