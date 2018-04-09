@@ -13,7 +13,7 @@ Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
 ## Requirements
 
 - Maven
-- Java 1.7+
+- Java 1.8+
 - Google Cloud Platform account
 
 ## Usage
