@@ -3,9 +3,8 @@
  */
 package com.github.yuiskw.beam;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -61,6 +60,14 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
     Timestamp timestamp = Timestamp.newBuilder()
         .setSeconds(millis / 1000)
         .setNanos((int) ((millis % 1000) * 1000000))
+        .build();
+    return timestamp;
+  }
+
+  public static Timestamp toTimestamp(Instant instant) {
+    long second = instant.getEpochSecond();
+    Timestamp timestamp = Timestamp.newBuilder()
+        .setSeconds(second)
         .build();
     return timestamp;
   }
@@ -124,8 +131,8 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
           .setExcludeFromIndexes(isExcluded).build();
     }
     else if (value instanceof String && parseTimestamp((String) value) != null) {
-      Date date = parseTimestamp((String) value);
-      Timestamp timestamp = toTimestamp(date);
+      Instant instant = parseTimestamp((String) value);
+      Timestamp timestamp = toTimestamp(instant);
       v = Value.newBuilder().setTimestampValue(timestamp)
           .setExcludeFromIndexes(isExcluded).build();
     }
@@ -135,17 +142,10 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       v = Value.newBuilder().setTimestampValue(timestamp)
           .setExcludeFromIndexes(isExcluded).build();
     } else if (value instanceof String && parseDate((String) value) != null) {
-      Date date = parseDate((String) value);
-      Timestamp timestamp = toTimestamp(date);
+      Instant instant = parseDate((String) value);
+      Timestamp timestamp = toTimestamp(instant);
       v = Value.newBuilder().setTimestampValue(timestamp)
           .setExcludeFromIndexes(isExcluded).build();
-    }
-    // TIME
-    // NOTE: Datastore doesn't have any data type to time.
-    else if (value instanceof org.joda.time.LocalTime) {
-      ;
-    } else if (value instanceof String && parseTime((String) value) != null) {
-      ;
     }
     // STRING
     else if (value instanceof String) {
@@ -258,65 +258,51 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
    *
    * Note: SimpledateFormat("yyyy-MM-dd") can't help parseing "yyyy-MM-dd HH:mm:ss" as well.
    */
-  public static Date parseDate(String value) {
-    Date date = null;
+  public static Instant parseDate(String value) {
+    Instant instant = null;
     try {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
           .withResolverStyle(ResolverStyle.SMART);
       java.time.LocalDate localDate = java.time.LocalDate.parse(value, formatter);
-      date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+      instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
     } catch (DateTimeParseException e) {
       // Do nothing.
       ;
     }
-    return date;
-  }
-
-  /**
-   * Parse string on time format
-   */
-  public static Date parseTime(String value) {
-    Date date = null;
-    List<String> patterns = Arrays.asList(
-        "HH:mm:ss.SSS z",
-        "HH:mm:ss.SSS",
-        "HH:mm:ss"
-    );
-    for (String pattern : patterns) {
-      try {
-        DateFormat sourceFormat = new SimpleDateFormat(pattern);
-        date = sourceFormat.parse(value);
-        return date;
-      } catch (ParseException e) {
-        // Do nothing.
-        ;
-      }
-    }
-    return date;
+    return instant;
   }
 
   /**
    * Parse string on timestamp format
    */
-  public static Date parseTimestamp(String value) {
-    Date date = null;
+  public static Instant parseTimestamp(String value) {
+    Instant instant = null;
     List<String> patterns = Arrays.asList(
-        "yyyy-MM-dd HH:mm:ss.SSS z",
-        "yyyy-MM-dd HH:mm:ss.SSS",
-        "yyyy-MM-dd HH:mm:ss",
-        "yyyy-MM-dd'T'HH:mm:ss"
+        "yyyy-M-d H:m:s.SSS z",
+        "yyyy-M-d H:m:s.SS z",
+        "yyyy-M-d H:m:s.S z",
+        "yyyy-M-d H:m:s.SSS",
+        "yyyy-M-d H:m:s.SS",
+        "yyyy-M-d H:m:s.S",
+        "yyyy-M-d H:m:s",
+        "yyyy-M-d'T'H:m:s.SSS",
+        "yyyy-M-d'T'H:m:s.SS",
+        "yyyy-M-d'T'H:m:s.S",
+        "yyyy-M-d'T'H:m:s"
     );
     for (String pattern : patterns) {
       try {
-        DateFormat sourceFormat = new SimpleDateFormat(pattern);
-        date = sourceFormat.parse(value);
-        return date;
-      } catch (ParseException e) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern)
+            .withResolverStyle(ResolverStyle.SMART);
+        java.time.LocalDateTime localDateTime = java.time.LocalDateTime.parse(value, formatter);
+        instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        return instant;
+      } catch (DateTimeParseException e) {
         // Do nothing.
         ;
       }
     }
-    return date;
+    return instant;
   }
 
   /**
