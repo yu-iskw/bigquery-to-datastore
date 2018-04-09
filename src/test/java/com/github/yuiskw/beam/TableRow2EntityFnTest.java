@@ -12,6 +12,7 @@ import com.google.api.services.bigquery.model.TableRow;
 import com.google.datastore.v1.Entity;
 import com.google.datastore.v1.Key;
 import com.google.datastore.v1.Value;
+import com.google.protobuf.Timestamp;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
@@ -94,25 +95,30 @@ public class TableRow2EntityFnTest {
   public void testIsDate() {
     assertNotNull(TableRow2EntityFn.parseDate("2017-01-01"));
     assertNotNull(TableRow2EntityFn.parseDate("2017-1-1"));
+    assertNotNull(TableRow2EntityFn.parseDate("2017-01-1"));
+    assertNotNull(TableRow2EntityFn.parseDate("2017-1-01"));
+    assertNotNull(TableRow2EntityFn.parseDate("2017-02-30"));
     assertNull(TableRow2EntityFn.parseDate("hoge"));
   }
 
   @Test
-  public void testIsTime() {
-    assertNotNull(TableRow2EntityFn.parseTime("04:14:37.844024"));
-    assertNotNull(TableRow2EntityFn.parseTime("4:4:7.4"));
-    assertNotNull(TableRow2EntityFn.parseTime("04:14:37"));
-    assertNull(TableRow2EntityFn.parseTime("hoge"));
-  }
-
-  @Test
   public void testIsTimestamp() {
-    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37.844024 UTC"));
-    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37.844024 PST"));
-    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37.844024 JST"));
-    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-16 4:14:37.844024 UTC"));
-    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16T04:14:37.844024"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37.844 UTC"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-1 4:1:1.1 UTC"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-1 4:1:1.12 UTC"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-1 4:1:1.001 UTC"));
+
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37.844 PST"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37.844 JST"));
+
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16T04:14:37.844"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-01T4:1:1.1"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-01T4:1:1.12"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-01T4:1:1.001"));
     assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-01 4:02:03"));
+
+    assertNull(TableRow2EntityFn.parseDate("98-9-12.com"));
     assertNull(TableRow2EntityFn.parseTimestamp("hoge"));
   }
 
@@ -124,5 +130,12 @@ public class TableRow2EntityFnTest {
     assertFalse(TableRow2EntityFn.isExcludedFromIndex("col3", indexedColumns));
 
     assertTrue(TableRow2EntityFn.isExcludedFromIndex(null, indexedColumns));
+  }
+
+  @Test
+  public void testToTimestamp() {
+    java.time.Instant instant = java.time.Instant.now();
+    Timestamp timestamp = TableRow2EntityFn.toTimestamp(instant);
+    assertEquals(instant.getEpochSecond(), timestamp.getSeconds());
   }
 }

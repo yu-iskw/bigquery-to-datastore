@@ -13,7 +13,7 @@ Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
 ## Requirements
 
 - Maven
-- Java 1.7+
+- Java 1.8+
 - Google Cloud Platform account
 
 ## Usage
@@ -46,7 +46,7 @@ Apache Beam's `DatastoreIO` doesn't allow us to write same key at once.
 mvn clean package
 
 # Run bigquery-to-datastore via the compiled JAR file
-java -cp $(pwd)/target/bigquery-to-datastore-bundled-0.3.jar \
+java -cp $(pwd)/target/bigquery-to-datastore-bundled-0.5.0.jar \
   com.github.yuiskw.beam.BigQuery2Datastore \
   --project=your-gcp-project \
   --runner=DataflowRunner \
@@ -71,7 +71,7 @@ mvn clean package
 make package
 
 # run
-java -cp $(pwd)/target/bigquery-to-datastore-bundled-0.3.jar --help
+java -cp $(pwd)/target/bigquery-to-datastore-bundled-0.5.0.jar --help
 # or
 ./bin/bigquery-to-datastore --help
 ```
@@ -80,7 +80,7 @@ java -cp $(pwd)/target/bigquery-to-datastore-bundled-0.3.jar --help
 We also offers docker images for this project in [yuiskw/bigquery\-to\-datastore \- Docker Hub](https://hub.docker.com/r/yuiskw/bigquery-to-datastore/).
 We have several docker images based on Apache Beam versions.
 ```
-docker run yuiskw/bigquery-to-datastore:latest --help
+docker run yuiskw/bigquery-to-datastore:0.5.0-beam-2.1 --help
 ```
 
 ### How to install it with homebrew
@@ -90,7 +90,7 @@ You can install it with homebrew from [yu-iskw/homebrew-bigquery-to-datastore](h
 brew install yu-iskw/bigquery-to-datastore/bigquery-to-datastore
 
 # show help
-bigquery-to-datastore --help
+./bin/bigquery-to-datastore --help
 ```
 
 ### Type conversions between BigQuery and Google Datastore

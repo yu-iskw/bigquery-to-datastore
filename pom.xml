@@ -22,7 +22,7 @@
 
   <groupId>com.github.yuiskw</groupId>
   <artifactId>bigquery-to-datastore</artifactId>
-  <version>0.4.1</version>
+  <version>0.5.0</version>
 
   <packaging>jar</packaging>
 
@@ -67,8 +67,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
 
@@ -173,7 +173,6 @@
           <groupId>org.apache.beam</groupId>
           <artifactId>beam-runners-google-cloud-dataflow-java</artifactId>
           <version>${beam.version}</version>
-          <scope>runtime</scope>
         </dependency>
       </dependencies>
     </profile>

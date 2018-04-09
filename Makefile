@@ -3,9 +3,10 @@
 #
 
 DOCKER_TAG := yuiskw/bigquery-to-datastore:latest
-DOCKER_TAG_VERSION := yuiskw/bigquery-to-datastore:beam-2.1
+DOCKER_TAG_VERSION := yuiskw/bigquery-to-datastore:$(shell bash ./dev/get-app-version.sh)-beam-2.1
 
-.PHONY: test checkstyle clean
+.PHONY: test checkstyle clean \
+		build-docker test-docker push-docker push-docker-latest push-docker-version
 
 all: checkstyle test package
 
@@ -23,8 +24,8 @@ clean:
 	  mvn clean
 
 build-docker: package
-	docker build -t $(DOCKER_TAG) .
-	docker build -t $(DOCKER_TAG_VERSION) .
+	docker build --rm -t $(DOCKER_TAG) .
+	docker build --rm -t $(DOCKER_TAG_VERSION) .
 
 test-docker: build-docker
 	docker run --rm --entrypoint "bash" $(DOCKER_TAG) ./dev/test.sh
