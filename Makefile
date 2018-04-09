@@ -5,7 +5,8 @@
 DOCKER_TAG := yuiskw/bigquery-to-datastore:latest
 DOCKER_TAG_VERSION := yuiskw/bigquery-to-datastore:$(shell bash ./dev/get-app-version.sh)-beam-2.1
 
-.PHONY: test checkstyle clean
+.PHONY: test checkstyle clean \
+		build-docker test-docker push-docker push-docker-latest push-docker-version
 
 all: checkstyle test package
 
