@@ -147,11 +147,6 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       v = Value.newBuilder().setTimestampValue(timestamp)
           .setExcludeFromIndexes(isExcluded).build();
     }
-    // STRING
-    else if (value instanceof String) {
-      v = Value.newBuilder().setStringValue((String) value)
-          .setExcludeFromIndexes(isExcluded).build();
-    }
     // RECORD
     else if (value instanceof List) {
       ArrayValue.Builder arrayValueBuilder = ArrayValue.newBuilder();
@@ -175,6 +170,12 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
         }
       }
       v = Value.newBuilder().setEntityValue(subEntityBuilder.build()).build();
+    }
+    // String
+    // If a given value is not match the above rule, it deals with it as string.
+    else {
+      v = Value.newBuilder().setStringValue(value.toString())
+          .setExcludeFromIndexes(isExcluded).build();
     }
     return v;
   }
