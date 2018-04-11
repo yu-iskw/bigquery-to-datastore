@@ -109,11 +109,11 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       v = Value.newBuilder().setIntegerValue(((Integer) value).intValue())
           .setExcludeFromIndexes(isExcluded).build();
     }
-    else if (value instanceof String && parseInteger((String) value) != null) {
-      Integer integer = parseInteger((String) value);
-      v = Value.newBuilder().setIntegerValue(integer.intValue())
-          .setExcludeFromIndexes(isExcluded).build();
-    }
+    // else if (value instanceof String && parseInteger((String) value) != null) {
+    //   Integer integer = parseInteger((String) value);
+    //   v = Value.newBuilder().setIntegerValue(integer.intValue())
+    //       .setExcludeFromIndexes(isExcluded).build();
+    // }
     // LONG
     else if (value instanceof java.lang.Long) {
       v = Value.newBuilder().setIntegerValue((int) ((Long) value).longValue())
@@ -124,6 +124,10 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       v = Value.newBuilder().setDoubleValue(((Double) value).doubleValue())
           .setExcludeFromIndexes(isExcluded).build();
     }
+    // else if (value instanceof String && parseDouble((String) value) != null) {
+    //   v = Value.newBuilder().setDoubleValue(((Double) value).doubleValue())
+    //       .setExcludeFromIndexes(isExcluded).build();
+    // }
     // TIMESTAMP
     else if (value instanceof org.joda.time.LocalDateTime) {
       Timestamp timestamp = toTimestamp(((LocalDateTime) value).toLocalDate().toDate());
@@ -241,17 +245,34 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
    * Parse integer value
    *
    * @param value String
-   * @return parsed integer of null if given value is not integer
+   * @return parsed integer or null if given value is not integer
    */
   public static Integer parseInteger(String value) {
-    Integer integer = null;
+    Integer parsed = null;
     try {
-      integer = Integer.valueOf(value);
+      parsed = Integer.valueOf(value);
     } catch (NumberFormatException e) {
       // Do nothing.
       ;
     }
-    return integer;
+    return parsed;
+  }
+
+  /**
+   * Parse double value
+   *
+   * @param value String
+   * @return parsed double or null if given value is not double
+   */
+  public static Double parseDouble(String value) {
+    Double parsed = null;
+    try {
+      parsed = Double.valueOf(value);
+    } catch (NumberFormatException e) {
+      // Do nothing.
+      ;
+    }
+    return parsed;
   }
 
   /**
