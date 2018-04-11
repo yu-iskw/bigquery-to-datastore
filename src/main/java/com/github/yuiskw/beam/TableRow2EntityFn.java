@@ -109,11 +109,11 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       v = Value.newBuilder().setIntegerValue(((Integer) value).intValue())
           .setExcludeFromIndexes(isExcluded).build();
     }
-    else if (value instanceof String && parseInteger((String) value) != null) {
-      Integer integer = parseInteger((String) value);
-      v = Value.newBuilder().setIntegerValue(integer.intValue())
-          .setExcludeFromIndexes(isExcluded).build();
-    }
+    // else if (value instanceof String && parseInteger((String) value) != null) {
+    //   Integer integer = parseInteger((String) value);
+    //   v = Value.newBuilder().setIntegerValue(integer.intValue())
+    //       .setExcludeFromIndexes(isExcluded).build();
+    // }
     // LONG
     else if (value instanceof java.lang.Long) {
       v = Value.newBuilder().setIntegerValue((int) ((Long) value).longValue())
@@ -124,6 +124,10 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       v = Value.newBuilder().setDoubleValue(((Double) value).doubleValue())
           .setExcludeFromIndexes(isExcluded).build();
     }
+    // else if (value instanceof String && parseDouble((String) value) != null) {
+    //   v = Value.newBuilder().setDoubleValue(((Double) value).doubleValue())
+    //       .setExcludeFromIndexes(isExcluded).build();
+    // }
     // TIMESTAMP
     else if (value instanceof org.joda.time.LocalDateTime) {
       Timestamp timestamp = toTimestamp(((LocalDateTime) value).toLocalDate().toDate());
@@ -145,11 +149,6 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       Instant instant = parseDate((String) value);
       Timestamp timestamp = toTimestamp(instant);
       v = Value.newBuilder().setTimestampValue(timestamp)
-          .setExcludeFromIndexes(isExcluded).build();
-    }
-    // STRING
-    else if (value instanceof String) {
-      v = Value.newBuilder().setStringValue((String) value)
           .setExcludeFromIndexes(isExcluded).build();
     }
     // RECORD
@@ -175,6 +174,12 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
         }
       }
       v = Value.newBuilder().setEntityValue(subEntityBuilder.build()).build();
+    }
+    // String
+    // If a given value is not match the above rule, it deals with it as string.
+    else {
+      v = Value.newBuilder().setStringValue(value.toString())
+          .setExcludeFromIndexes(isExcluded).build();
     }
     return v;
   }
@@ -240,17 +245,34 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
    * Parse integer value
    *
    * @param value String
-   * @return parsed integer of null if given value is not integer
+   * @return parsed integer or null if given value is not integer
    */
   public static Integer parseInteger(String value) {
-    Integer integer = null;
+    Integer parsed = null;
     try {
-      integer = Integer.valueOf(value);
+      parsed = Integer.valueOf(value);
     } catch (NumberFormatException e) {
       // Do nothing.
       ;
     }
-    return integer;
+    return parsed;
+  }
+
+  /**
+   * Parse double value
+   *
+   * @param value String
+   * @return parsed double or null if given value is not double
+   */
+  public static Double parseDouble(String value) {
+    Double parsed = null;
+    try {
+      parsed = Double.valueOf(value);
+    } catch (NumberFormatException e) {
+      // Do nothing.
+      ;
+    }
+    return parsed;
   }
 
   /**
@@ -264,7 +286,7 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
           .withResolverStyle(ResolverStyle.SMART);
       java.time.LocalDate localDate = java.time.LocalDate.parse(value, formatter);
-      instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+      instant = localDate.atStartOfDay().atZone(ZoneId.of("UTC")).toInstant();
     } catch (DateTimeParseException e) {
       // Do nothing.
       ;
@@ -295,7 +317,7 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern)
             .withResolverStyle(ResolverStyle.SMART);
         java.time.LocalDateTime localDateTime = java.time.LocalDateTime.parse(value, formatter);
-        instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        instant = localDateTime.atZone(ZoneId.of("UTC")).toInstant();
         return instant;
       } catch (DateTimeParseException e) {
         // Do nothing.

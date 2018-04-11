@@ -92,6 +92,65 @@ public class TableRow2EntityFnTest {
   }
 
   @Test
+  public void testConvertToDatastoreValue() {
+    TableRow2EntityFn fn =new TableRow2EntityFn(
+        projectId, namespace, null, kind, keyColumn, indexedColumns);
+
+    Value v = null;
+
+    // String
+    v = fn.convertToDatastoreValue("value", "hello, world");
+    assertEquals("hello, world", v.getStringValue());
+
+    // Integer
+    v = fn.convertToDatastoreValue("value", 123);
+    assertEquals(123, v.getIntegerValue());
+
+    // Double
+    v = fn.convertToDatastoreValue("value", 123.456);
+    assertEquals(123.456, v.getDoubleValue(), 1e-3);
+
+    // Timestamp
+    v = fn.convertToDatastoreValue("value", "2018-01-01 01:23:45");
+    assertEquals(1514769825, v.getTimestampValue().getSeconds());
+
+    // Date
+    v = fn.convertToDatastoreValue("value", "2018-01-01");
+    assertEquals(1514764800, v.getTimestampValue().getSeconds());
+
+    // Array
+    v = fn.convertToDatastoreValue("value", Arrays.asList(1, 2, 3));
+    assertEquals(3, v.getArrayValue().getValuesCount());
+
+    // Struct
+    Map<String, Object> subMap = new HashMap<String, Object>();
+    subMap.put("int", 123);
+    subMap.put("array", Arrays.asList(1, 2, 3));
+
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("int", 123);
+    map.put("double", 123.456);
+    map.put("string", "hello, world");
+    map.put("timestamp", "2018-01-01 01:23:45");
+    map.put("date", "2018-01-01");
+    map.put("array", Arrays.asList(1, 2, 3));
+    map.put("struct", subMap);
+
+    v = fn.convertToDatastoreValue("value", map);
+    Entity entity = v.getEntityValue();
+    assertEquals(123, entity.getPropertiesOrThrow("int").getIntegerValue());
+    assertEquals(123.456, entity.getPropertiesOrThrow("double").getDoubleValue(), 1e-3);
+    assertEquals("hello, world", entity.getPropertiesOrThrow("string").getStringValue());
+    assertEquals(1514769825, entity.getPropertiesOrThrow("timestamp").getTimestampValue().getSeconds());
+    assertEquals(1514764800, entity.getPropertiesOrThrow("date").getTimestampValue().getSeconds());
+    assertEquals(3, entity.getPropertiesOrThrow("array").getArrayValue().getValuesCount());
+
+    Entity subEntity = entity.getPropertiesOrThrow("struct").getEntityValue();
+    assertEquals(123, subEntity.getPropertiesOrThrow("int").getIntegerValue());
+    assertEquals(3, subEntity.getPropertiesOrThrow("array").getArrayValue().getValuesCount());
+  }
+
+  @Test
   public void testIsDate() {
     assertNotNull(TableRow2EntityFn.parseDate("2017-01-01"));
     assertNotNull(TableRow2EntityFn.parseDate("2017-1-1"));
