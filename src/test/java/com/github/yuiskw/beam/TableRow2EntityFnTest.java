@@ -112,11 +112,11 @@ public class TableRow2EntityFnTest {
 
     // Timestamp
     v = fn.convertToDatastoreValue("value", "2018-01-01 01:23:45");
-    assertEquals(1514798625, v.getTimestampValue().getSeconds());
+    assertEquals(1514769825, v.getTimestampValue().getSeconds());
 
     // Date
     v = fn.convertToDatastoreValue("value", "2018-01-01");
-    assertEquals(1514793600, v.getTimestampValue().getSeconds());
+    assertEquals(1514764800, v.getTimestampValue().getSeconds());
 
     // Array
     v = fn.convertToDatastoreValue("value", Arrays.asList(1, 2, 3));
@@ -141,8 +141,8 @@ public class TableRow2EntityFnTest {
     assertEquals(123, entity.getPropertiesOrThrow("int").getIntegerValue());
     assertEquals(123.456, entity.getPropertiesOrThrow("double").getDoubleValue(), 1e-3);
     assertEquals("hello, world", entity.getPropertiesOrThrow("string").getStringValue());
-    assertEquals(1514798625, entity.getPropertiesOrThrow("timestamp").getTimestampValue().getSeconds());
-    assertEquals(1514793600, entity.getPropertiesOrThrow("date").getTimestampValue().getSeconds());
+    assertEquals(1514769825, entity.getPropertiesOrThrow("timestamp").getTimestampValue().getSeconds());
+    assertEquals(1514764800, entity.getPropertiesOrThrow("date").getTimestampValue().getSeconds());
     assertEquals(3, entity.getPropertiesOrThrow("array").getArrayValue().getValuesCount());
 
     Entity subEntity = entity.getPropertiesOrThrow("struct").getEntityValue();

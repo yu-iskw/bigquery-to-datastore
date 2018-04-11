@@ -286,7 +286,7 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
           .withResolverStyle(ResolverStyle.SMART);
       java.time.LocalDate localDate = java.time.LocalDate.parse(value, formatter);
-      instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+      instant = localDate.atStartOfDay().atZone(ZoneId.of("UTC")).toInstant();
     } catch (DateTimeParseException e) {
       // Do nothing.
       ;
@@ -317,7 +317,7 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern)
             .withResolverStyle(ResolverStyle.SMART);
         java.time.LocalDateTime localDateTime = java.time.LocalDateTime.parse(value, formatter);
-        instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        instant = localDateTime.atZone(ZoneId.of("UTC")).toInstant();
         return instant;
       } catch (DateTimeParseException e) {
         // Do nothing.
