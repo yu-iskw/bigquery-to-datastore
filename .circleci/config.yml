@@ -4,6 +4,18 @@ references:
   container_config: &container_config
     docker:
       - image: openjdk:8-jdk
+  install_dependencies: &install_dependencies
+    name: install dependencies
+    command: |
+      apt-get update -y && apt-get install -y build-essential maven
+  install_docker: &install_docker
+    name: Install Docker client
+    command: |
+      set -x
+      VER="17.03.0-ce"
+      curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+      tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+      mv /tmp/docker/* /usr/bin
 
 jobs:
   build:
@@ -11,18 +23,8 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install Docker client
-          command: |
-            set -x
-            VER="17.03.0-ce"
-            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
-            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-            mv /tmp/docker/* /usr/bin
-      - run:
-          name: install dependencies
-          command: |
-            apt-get update -y && apt-get install -y build-essential maven
+      - run: *install_dependencies
+      - run: *install_docker
       - run:
           name: build package
           command: |
@@ -39,18 +41,8 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install Docker client
-          command: |
-            set -x
-            VER="17.03.0-ce"
-            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
-            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-            mv /tmp/docker/* /usr/bin
-      - run:
-          name: install dependencies
-          command: |
-            apt-get update -y && apt-get install -y build-essential maven
+      - run: *install_dependencies
+      - run: *install_docker
       - run:
           name: build package
           command: |
