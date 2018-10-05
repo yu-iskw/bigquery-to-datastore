@@ -25,8 +25,12 @@ checkstyle:
 clean:
 	  mvn clean
 
-build-docker: package
+build-docker: build-docker-latest build-docker-version
+
+build-docker-latest: package
 	docker build --rm -t $(DOCKER_TAG) .
+
+build-docker-version: package
 	docker build --rm -t $(DOCKER_TAG_VERSION) .
 
 test-docker: build-docker
