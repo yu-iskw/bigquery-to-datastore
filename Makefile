@@ -15,6 +15,8 @@ package:
 
 test:
 		mvn test
+
+test-command:
 		bash ./dev/test.sh
 
 checkstyle:
