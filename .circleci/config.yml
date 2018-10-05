@@ -1,0 +1,88 @@
+version: 2
+
+references:
+  container_config: &container_config
+    docker:
+      - image: openjdk:8-jdk
+
+jobs:
+  build:
+    <<: *container_config
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update -y && apt-get install -y build-essential maven
+      - run:
+          name: build package
+          command: |
+            make clean
+            make package
+            make test
+            make test-command
+      - run:
+          name: build docker image
+          command: |
+            make build-docker-version
+  build_and_push:
+    <<: *container_config
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update -y && apt-get install -y build-essential maven
+      - run:
+          name: build package
+          command: |
+            make clean
+            make package
+            make test
+            make test-command
+      - run:
+          name: build docker image
+          command: |
+            make build-docker-version
+      - run:
+          name: push docker image
+          command: |
+            docker login -u "$DOCKERHUB_USER" -p "$DOCKERHUB_PASS"
+            make push-docker-version
+
+workflows:
+  version: 2
+  build_workflow:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              ignore: /.*/
+  build_and_push_workflow:
+    jobs:
+      - build_and_push:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
