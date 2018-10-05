@@ -48,6 +48,10 @@ jobs:
             tar -xz -C /tmp -f /tmp/docker-$VER.tgz
             mv /tmp/docker/* /usr/bin
       - run:
+          name: install dependencies
+          command: |
+            apt-get update -y && apt-get install -y build-essential maven
+      - run:
           name: push a docker image
           command: |
             docker login -u "$DOCKERHUB_USER" -p "$DOCKERHUB_PASS"
