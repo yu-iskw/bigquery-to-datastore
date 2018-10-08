@@ -35,7 +35,7 @@ jobs:
       - run:
           name: build docker image
           command: |
-            make build-docker-version
+            make build-docker-version DOCKER_IMAGE_TAG="build-${CIRCLE_BUILD_NUM}"
   build_and_push:
     <<: *container_config
     steps:
@@ -53,12 +53,12 @@ jobs:
       - run:
           name: build docker image
           command: |
-            make build-docker-version
+            make build-docker-version DOCKER_IMAGE_TAG="$CIRCLE_TAG"
       - run:
           name: push docker image
           command: |
             docker login -u "$DOCKERHUB_USER" -p "$DOCKERHUB_PASS"
-            make push-docker-version
+            make push-docker-version DOCKER_IMAGE_TAG="$CIRCLE_TAG"
 
 workflows:
   version: 2
