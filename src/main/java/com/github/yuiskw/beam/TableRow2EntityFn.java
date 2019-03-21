@@ -303,6 +303,7 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
         "yyyy-M-d H:m:s.SSS z",
         "yyyy-M-d H:m:s.SS z",
         "yyyy-M-d H:m:s.S z",
+        "yyyy-M-d H:m:s z",
         "yyyy-M-d H:m:s.SSS",
         "yyyy-M-d H:m:s.SS",
         "yyyy-M-d H:m:s.S",
