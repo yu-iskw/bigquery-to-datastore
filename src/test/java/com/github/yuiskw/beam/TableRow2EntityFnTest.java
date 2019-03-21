@@ -166,6 +166,7 @@ public class TableRow2EntityFnTest {
     assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-1 4:1:1.1 UTC"));
     assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-1 4:1:1.12 UTC"));
     assertNotNull(TableRow2EntityFn.parseTimestamp("2017-9-1 4:1:1.001 UTC"));
+    assertNotNull(TableRow2EntityFn.parseTimestamp("2019-03-13 22:00:20 UTC"));
 
     assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37.844 PST"));
     assertNotNull(TableRow2EntityFn.parseTimestamp("2017-09-16 04:14:37.844 JST"));
