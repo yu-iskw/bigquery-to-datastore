@@ -13,7 +13,6 @@ import java.util.*;
 
 import com.google.api.services.bigquery.model.TableRow;
 import com.google.datastore.v1.*;
-import com.google.protobuf.Timestamp;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -54,19 +53,20 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
 
   /**
    * Convert Date to Timestamp
+   * @return
    */
-  public static Timestamp toTimestamp(Date date) {
+  public static com.google.protobuf.Timestamp toTimestamp(Date date) {
     long millis = date.getTime();
-    Timestamp timestamp = Timestamp.newBuilder()
+    com.google.protobuf.Timestamp timestamp = com.google.protobuf.Timestamp.newBuilder()
         .setSeconds(millis / 1000)
         .setNanos((int) ((millis % 1000) * 1000000))
         .build();
     return timestamp;
   }
 
-  public static Timestamp toTimestamp(Instant instant) {
+  public static com.google.protobuf.Timestamp toTimestamp(Instant instant) {
     long second = instant.getEpochSecond();
-    Timestamp timestamp = Timestamp.newBuilder()
+    com.google.protobuf.Timestamp timestamp = com.google.protobuf.Timestamp.newBuilder()
         .setSeconds(second)
         .build();
     return timestamp;
@@ -130,24 +130,24 @@ public class TableRow2EntityFn extends DoFn<TableRow, Entity> {
     // }
     // TIMESTAMP
     else if (value instanceof org.joda.time.LocalDateTime) {
-      Timestamp timestamp = toTimestamp(((LocalDateTime) value).toLocalDate().toDate());
+      com.google.protobuf.Timestamp timestamp = toTimestamp(((LocalDateTime) value).toLocalDate().toDate());
       v = Value.newBuilder().setTimestampValue(timestamp)
           .setExcludeFromIndexes(isExcluded).build();
     }
     else if (value instanceof String && parseTimestamp((String) value) != null) {
       Instant instant = parseTimestamp((String) value);
-      Timestamp timestamp = toTimestamp(instant);
+      com.google.protobuf.Timestamp timestamp = toTimestamp(instant);
       v = Value.newBuilder().setTimestampValue(timestamp)
           .setExcludeFromIndexes(isExcluded).build();
     }
     // DATE
     else if (value instanceof org.joda.time.LocalDate) {
-      Timestamp timestamp = toTimestamp(((LocalDate) value).toDate());
+      com.google.protobuf.Timestamp timestamp = toTimestamp(((LocalDate) value).toDate());
       v = Value.newBuilder().setTimestampValue(timestamp)
           .setExcludeFromIndexes(isExcluded).build();
     } else if (value instanceof String && parseDate((String) value) != null) {
       Instant instant = parseDate((String) value);
-      Timestamp timestamp = toTimestamp(instant);
+      com.google.protobuf.Timestamp timestamp = toTimestamp(instant);
       v = Value.newBuilder().setTimestampValue(timestamp)
           .setExcludeFromIndexes(isExcluded).build();
     }
