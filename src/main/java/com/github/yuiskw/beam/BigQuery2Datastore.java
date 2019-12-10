@@ -72,7 +72,10 @@ public class BigQuery2Datastore {
     List<String> indexedColumns = parseIndexedColumns(options.getIndexedColumns());
 
     // Input
-    TableReference tableRef = new TableReference().setDatasetId(datasetId).setTableId(tableId);
+    TableReference tableRef = new TableReference()
+        .setProjectId(projectId)
+        .setDatasetId(datasetId)
+        .setTableId(tableId);
     BigQueryIO.Read reader = BigQueryIO.read().from(tableRef);
 
     // Output
