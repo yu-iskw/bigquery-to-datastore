@@ -33,10 +33,10 @@ build-docker-version: check-docker-image-tag package
 	docker build --rm -t $(DOCKER_REPO):$(DOCKER_IMAGE_TAG) .
 
 test-docker: build-docker
-	docker run --rm --entrypoint "bash" $(DOCKER_TAG) ./dev/test.sh
+	docker run --rm --entrypoint "bash" $(DOCKER_IMAGE_TAG) ./dev/test.sh
 
 push-docker: check-docker-image-tag
-	docker push $(DOCKER_REPO):$(DOCKER_TAG_TAG)
+	docker push $(DOCKER_REPO):$(DOCKER_IMAGE_TAG)
 
 check-docker-image-tag:
 ifndef DOCKER_IMAGE_TAG

@@ -89,7 +89,7 @@ public class BigQuery2Datastore {
         .apply(reader)
         .apply(ParDo.of(fn))
         .apply(writer);
-    pipeline.run();
+    pipeline.run().waitUntilFinish();
   }
 
   /**
