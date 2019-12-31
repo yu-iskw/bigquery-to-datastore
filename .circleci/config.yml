@@ -1,9 +1,12 @@
 version: 2
 
 references:
-  container_config: &container_config
+  container_openjdk8: &container_openjdk8
     docker:
       - image: openjdk:8-jdk
+  container_openjdk11: &container_openjdk11
+    docker:
+      - image: openjdk:11-jdk
   install_dependencies: &install_dependencies
     name: install dependencies
     command: |
@@ -18,8 +21,26 @@ references:
       mv /tmp/docker/* /usr/bin
 
 jobs:
-  build:
-    <<: *container_config
+  build_jdk8:
+    <<: *container_openjdk8
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: *install_dependencies
+      - run: *install_docker
+      - run:
+          name: build package
+          command: |
+            make clean
+            make package
+            make test
+            make test-command
+      - run:
+          name: build docker image
+          command: |
+            make build-docker-version DOCKER_IMAGE_TAG="build-${CIRCLE_BUILD_NUM}"
+  build_jdk11:
+    <<: *container_openjdk11
     steps:
       - checkout
       - setup_remote_docker
@@ -37,7 +58,7 @@ jobs:
           command: |
             make build-docker-version DOCKER_IMAGE_TAG="build-${CIRCLE_BUILD_NUM}"
   build_and_push:
-    <<: *container_config
+    <<: *container_openjdk8
     steps:
       - checkout
       - setup_remote_docker
@@ -64,7 +85,13 @@ workflows:
   version: 2
   build_workflow:
     jobs:
-      - build:
+      - build_jdk8:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              ignore: /.*/
+      - build_jdk11:
           filters:
             branches:
               only: /.*/
